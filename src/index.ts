@@ -1,6 +1,6 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as pdfParse from 'pdf-parse';
+import pdfParse from 'pdf-parse';
 import * as mammoth from 'mammoth';
 import * as textract from 'textract';
 import { promisify } from 'util';
@@ -79,13 +79,13 @@ export class DocumentReader {
             'UNSUPPORTED_FORMAT'
           );
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof DocumentReaderError) {
         throw error;
       }
       this.log(`Error reading document ${filePath}:`, error);
       throw new DocumentReaderError(
-        `Failed to read document: ${error.message}`,
+        `Failed to read document: ${error instanceof Error ? error.message : String(error)}`,
         'READ_ERROR'
       );
     }
@@ -101,9 +101,10 @@ export class DocumentReader {
 
     return results.map((result, index) => {
       if (result.status === 'rejected') {
-        this.log(`Failed to read document ${filePaths[index]}:`, result.reason);
+        const error = result.reason;
+        this.log(`Failed to read document ${filePaths[index]}:`, error);
         throw new DocumentReaderError(
-          `Failed to read document ${filePaths[index]}: ${result.reason.message}`,
+          `Failed to read document ${filePaths[index]}: ${error instanceof Error ? error.message : String(error)}`,
           'MULTI_READ_ERROR'
         );
       }
@@ -130,9 +131,12 @@ export class DocumentReader {
           info: data.info,
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading PDF ${filePath}:`, error);
-      throw new DocumentReaderError(`Failed to read PDF: ${error.message}`, 'PDF_READ_ERROR');
+      throw new DocumentReaderError(
+        `Failed to read PDF: ${error instanceof Error ? error.message : String(error)}`,
+        'PDF_READ_ERROR'
+      );
     }
   }
 
@@ -158,9 +162,12 @@ export class DocumentReader {
           fileName: path.basename(filePath),
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading DOCX ${filePath}:`, error);
-      throw new DocumentReaderError(`Failed to read DOCX: ${error.message}`, 'DOCX_READ_ERROR');
+      throw new DocumentReaderError(
+        `Failed to read DOCX: ${error instanceof Error ? error.message : String(error)}`,
+        'DOCX_READ_ERROR'
+      );
     }
   }
 
@@ -176,7 +183,7 @@ export class DocumentReader {
    */
   private async readWithTextract(filePath: string, fileSize?: number): Promise<DocumentContent> {
     try {
-      const text = await this.textractFromFile(filePath);
+      const text = await this.textractFromFile(filePath) as string;
 
       return {
         text: text || '',
@@ -187,10 +194,10 @@ export class DocumentReader {
           fileName: path.basename(filePath),
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading document with textract ${filePath}:`, error);
       throw new DocumentReaderError(
-        `Failed to read document: ${error.message}`,
+        `Failed to read document: ${error instanceof Error ? error.message : String(error)}`,
         'TEXTRACT_READ_ERROR'
       );
     }
@@ -232,7 +239,7 @@ export class DocumentReader {
       }
       this.log(`Error reading document from buffer:`, error);
       throw new DocumentReaderError(
-        `Failed to read document from buffer: ${error.message}`,
+        `Failed to read document from buffer: ${error instanceof Error ? error.message : String(error)}`,
         'BUFFER_READ_ERROR'
       );
     }
@@ -252,9 +259,10 @@ export class DocumentReader {
 
     return results.map((result, index) => {
       if (result.status === 'rejected') {
-        this.log(`Failed to read buffer ${buffers[index].fileName}:`, result.reason);
+        const error = result.reason;
+        this.log(`Failed to read buffer ${buffers[index].fileName}:`, error);
         throw new DocumentReaderError(
-          `Failed to read buffer ${buffers[index].fileName}: ${result.reason.message}`,
+          `Failed to read buffer ${buffers[index].fileName}: ${error instanceof Error ? error.message : String(error)}`,
           'MULTI_BUFFER_READ_ERROR'
         );
       }
@@ -280,10 +288,10 @@ export class DocumentReader {
           info: data.info,
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading PDF from buffer:`, error);
       throw new DocumentReaderError(
-        `Failed to read PDF from buffer: ${error.message}`,
+        `Failed to read PDF from buffer: ${error instanceof Error ? error.message : String(error)}`,
         'PDF_BUFFER_READ_ERROR'
       );
     }
@@ -311,7 +319,7 @@ export class DocumentReader {
     } catch (error) {
       this.log(`Error reading DOCX from buffer:`, error);
       throw new DocumentReaderError(
-        `Failed to read DOCX from buffer: ${error.message}`,
+        `Failed to read DOCX from buffer: ${error instanceof Error ? error.message : String(error)}`,
         'DOCX_BUFFER_READ_ERROR'
       );
     }
@@ -336,7 +344,7 @@ export class DocumentReader {
     } catch (error) {
       this.log(`Error reading text from buffer:`, error);
       throw new DocumentReaderError(
-        `Failed to read text from buffer: ${error.message}`,
+        `Failed to read text from buffer: ${error instanceof Error ? error.message : String(error)}`,
         'TEXT_BUFFER_READ_ERROR'
       );
     }
@@ -364,7 +372,7 @@ export class DocumentReader {
           }
         };
 
-        const text = await this.textractFromFile(tempFilePath, options);
+        const text = await this.textractFromFile(tempFilePath) as string;
 
         if (!text) {
           throw new Error('No text content could be extracted from the file');
@@ -383,14 +391,14 @@ export class DocumentReader {
         // Clean up the temporary file
         try {
           await fs.unlink(tempFilePath);
-        } catch (error) {
+        } catch (error: unknown) {
           this.log(`Failed to delete temporary file ${tempFilePath}:`, error);
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading document from buffer with textract:`, error);
       throw new DocumentReaderError(
-        `Failed to read PowerPoint file: ${error.message}. Please ensure the file is not corrupted and try again.`,
+        `Failed to read PowerPoint file: ${error instanceof Error ? error.message : String(error)}. Please ensure the file is not corrupted and try again.`,
         'TEXTRACT_BUFFER_READ_ERROR'
       );
     }
@@ -437,11 +445,14 @@ export class DocumentReader {
           'UNSUPPORTED_FORMAT'
         );
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof DocumentReaderError) {
         throw error;
       }
-      throw new DocumentReaderError(`File validation failed: ${error.message}`, 'VALIDATION_ERROR');
+      throw new DocumentReaderError(
+        `File validation failed: ${error instanceof Error ? error.message : String(error)}`,
+        'VALIDATION_ERROR'
+      );
     }
   }
 
@@ -492,10 +503,10 @@ export class DocumentReader {
           fileName: path.basename(filePath),
         },
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.log(`Error reading text file ${filePath}:`, error);
       throw new DocumentReaderError(
-        `Failed to read text file: ${error.message}`,
+        `Failed to read text file: ${error instanceof Error ? error.message : String(error)}`,
         'TEXT_READ_ERROR'
       );
     }

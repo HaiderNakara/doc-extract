@@ -1,6 +1,6 @@
 {
   "name": "doc-extract",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "A Node.js library for reading and extracting text from various document formats (PDF, DOCX, DOC, PPT, PPTX, TXT)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -50,6 +50,7 @@
     "@types/jest": "^29.5.8",
     "@types/node": "^20.9.0",
     "@types/pdf-parse": "^1.1.4",
+    "@types/textract": "^2.4.5",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "@typescript-eslint/parser": "^6.11.0",
     "eslint": "^8.54.0",
