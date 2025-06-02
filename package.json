@@ -1,0 +1,64 @@
+{
+  "name": "doc-extract",
+  "version": "1.0.0",
+  "description": "A Node.js library for reading and extracting text from various document formats (PDF, DOCX, DOC, PPT, PPTX, TXT)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "keywords": [
+    "document",
+    "reader",
+    "pdf",
+    "docx",
+    "powerpoint",
+    "text-extraction",
+    "file-parser",
+    "nodejs",
+    "typescript"
+  ],
+  "author": "Haider Nakara <haider.nakar@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HaiderNakara/doc-extract.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HaiderNakara/doc-extract/issues"
+  },
+  "homepage": "https://github.com/HaiderNakara/doc-extract#readme",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "mammoth": "^1.6.0",
+    "pdf-parse": "^1.1.1",
+    "textract": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.0",
+    "@types/pdf-parse": "^1.1.4",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.54.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.1.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
