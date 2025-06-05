@@ -2,6 +2,10 @@
 
 A powerful Node.js library for reading and extracting text from various document formats including PDF, DOCX, DOC, PPT, PPTX, and TXT files.
 
+## Documentation
+
+[Documentation](https://doc-extract.xyz)
+
 ## Features
 
 - 📄 **Multiple Format Support**: PDF, DOCX, DOC, PPT, PPTX, TXT
